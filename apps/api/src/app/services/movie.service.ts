@@ -1,10 +1,15 @@
-import { Movie, MoviePayload } from '@movie-rating-app/api-interfaces';
+import {
+  Movie,
+  CreateMoviePayload,
+  DeleteMoviePayload,
+  UpdateMoviePayload,
+} from '@movie-rating-app/api-interfaces';
 import { Injectable } from '@nestjs/common';
 import { movies_db } from '../../in-memory-db';
 
 @Injectable()
 export class MovieService {
-  getMovies(): Movie[] {
+  findAll(): Movie[] {
     return Object.values(movies_db);
   }
 
@@ -12,7 +17,7 @@ export class MovieService {
     throw new Error('Movie not found');
   }
 
-  getMovie(id: string): Movie {
+  findOne(id: Movie['id']): Movie {
     const movie = movies_db[id];
 
     if (!movie) {
@@ -22,7 +27,7 @@ export class MovieService {
     return movie;
   }
 
-  createMovie(movieData: MoviePayload): Movie {
+  create(movieData: CreateMoviePayload): Movie {
     /**
      * Let's imagine here we have validation to ensure that a new movie that has the same title, director and year of release cannot be added.
      */
@@ -41,34 +46,41 @@ export class MovieService {
     return movie;
   }
 
-  updateMovie(movieId: Movie['id'], movieData: Partial<MoviePayload>): Movie {
-    const movie = movies_db[movieId];
+  update({ id, ...movieFields }: UpdateMoviePayload): Movie {
+    const movie = movies_db[id];
 
     if (!movie) {
       this.throwMovieNotFound();
     }
 
+    /**
+     * In a real API Service here we would need
+     * schema validation to make sure that all inputs
+     * are respecting the Interface Contract
+     * (for example we can't just add another extra field like 'actors' or risk any malformation from the client)
+     */
     const updatedMovie: Movie = {
       ...movie,
-      ...movieData,
+      ...movieFields,
+      // restrict these properties from updates
       createdAt: movie.createdAt,
       id: movie.id,
       updatedAt: new Date().toISOString(),
     };
 
-    movies_db[movieId] = updatedMovie;
+    movies_db[id] = updatedMovie;
 
     return updatedMovie;
   }
 
-  deleteMovie(movieId: Movie['id']): Movie {
-    const movie = movies_db[movieId];
+  delete({ id }: DeleteMoviePayload) {
+    const movie = movies_db[id];
 
     if (!movie) {
       this.throwMovieNotFound();
     }
 
-    delete movies_db[movieId];
+    delete movies_db[id];
 
     return movie;
   }

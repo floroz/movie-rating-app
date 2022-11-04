@@ -3,4 +3,4 @@ import { NgModule } from '@angular/core';
 @NgModule({
   exports: [],
 })
-export class AppMaterialUIModule {}
+export class MaterialModule {}

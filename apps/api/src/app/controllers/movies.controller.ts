@@ -5,11 +5,16 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   Put,
 } from '@nestjs/common';
 
-import { Movie, MoviePayload } from '@movie-rating-app/api-interfaces';
+import {
+  CreateMoviePayload,
+  Movie,
+  UpdateMoviePayload,
+} from '@movie-rating-app/api-interfaces';
 
 import { MovieService } from '../services/movie.service';
 
@@ -22,43 +27,46 @@ export class MoviesController {
   }
 
   @Get()
-  getMovies(): Movie[] {
-    return this.moviesService.getMovies();
+  findAll(): Movie[] {
+    return this.moviesService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: Movie['id']): Movie {
+    return this.moviesService.findOne(id);
   }
 
   @Post()
-  createMovie(@Body() moviePayload: MoviePayload): Movie {
-    this.moviesService.createMovie(moviePayload);
+  create(@Body() moviePayload: CreateMoviePayload): Movie {
+    this.moviesService.create(moviePayload);
 
     try {
-      const newMovie = this.moviesService.createMovie(moviePayload);
+      const newMovie = this.moviesService.create(moviePayload);
       return newMovie;
     } catch (error) {
-      //
+      throw new HttpException('Invalid Payload', HttpStatus.BAD_REQUEST);
     }
   }
 
-  @Put() updateMovie(
+  @Put(':id') update(
+    @Param('id') id: string,
     @Body()
-    {
-      id,
-      moviePayload,
-    }: {
-      id: Movie['id'];
-      moviePayload: Partial<MoviePayload>;
-    }
+    payload: UpdateMoviePayload
   ): Movie {
     try {
-      const updatedMovie = this.moviesService.updateMovie(id, moviePayload);
+      const updatedMovie = this.moviesService.update({
+        id,
+        ...payload,
+      });
       return updatedMovie;
     } catch (error) {
       this.throwNotFoundException();
     }
   }
 
-  @Delete() deleteMovie(@Body() { id }: { id: Movie['id'] }) {
+  @Delete(':id') delete(@Param('id') id: string) {
     try {
-      const deletedMovie = this.moviesService.deleteMovie(id);
+      const deletedMovie = this.moviesService.delete({ id });
       return deletedMovie;
     } catch (error) {
       this.throwNotFoundException();

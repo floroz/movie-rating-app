@@ -1,12 +1,4 @@
-interface Entity {
-  id: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface User extends Entity {
-  email: string;
-}
+import { Movie, User } from './entities';
 
 interface Rating {
   score: number;
@@ -20,15 +12,14 @@ export interface Ratings {
   ratings: Rating[];
 }
 
-export interface MoviePayload {
+export interface CreateMoviePayload {
   title: string;
   directedBy: string;
   releaseYear: number;
 }
 
-export interface Movie extends Entity {
-  title: string;
-  directedBy: string;
-  releaseYear: number;
-  rating: number;
-}
+export type UpdateMoviePayload = {
+  id: Movie['id'];
+} & Partial<CreateMoviePayload>;
+
+export type DeleteMoviePayload = Pick<Movie, 'id'>;
