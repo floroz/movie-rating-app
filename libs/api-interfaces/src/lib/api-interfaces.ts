@@ -1,19 +1,23 @@
-export interface User {
+interface Entity {
   id: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface User extends Entity {
   email: string;
 }
 
-type RatingScore = 0 | 1 | 2 | 3 | 4 | 5;
-
-interface RatingEntry {
-  score: RatingScore;
+interface Rating {
+  score: number;
   userId: User['id'];
+  movieId: Movie['id'];
 }
 
-export interface Rating {
+export interface Ratings {
   movieId: Movie['id'];
-  averageScore: RatingScore;
-  ratings: RatingEntry[];
+  averageScore: number;
+  ratings: Rating[];
 }
 
 export interface MoviePayload {
@@ -22,12 +26,9 @@ export interface MoviePayload {
   releaseYear: number;
 }
 
-export interface Movie {
-  id: string;
+export interface Movie extends Entity {
   title: string;
   directedBy: string;
   releaseYear: number;
-  rating: RatingScore;
-  createdAt: Date;
-  updatedAt?: Date;
+  rating: number;
 }

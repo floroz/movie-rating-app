@@ -32,7 +32,7 @@ export class MovieService {
     const movie: Movie = {
       ...movieData,
       id,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
       rating: 0,
     };
 
@@ -53,7 +53,7 @@ export class MovieService {
       ...movieData,
       createdAt: movie.createdAt,
       id: movie.id,
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     };
 
     movies_db[movieId] = updatedMovie;
