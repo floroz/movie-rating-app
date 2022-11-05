@@ -6,7 +6,7 @@ import {
   UpdateMovieDto,
 } from '@movie-rating-app/api-interfaces';
 import { Observable } from 'rxjs';
-import { EnvironmentService } from '../environment/environment.service';
+import { EnvironmentService } from '../shared/data-access/environment/environment.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +41,7 @@ export class MoviesService {
     return this.http.patch<Movie>(this.genUrl(id), updateMovieDto);
   }
 
-  delete(id: Movie['id']): Observable<Movie> {
+  remove(id: Movie['id']): Observable<Movie> {
     return this.http.delete<Movie>(this.genUrl(id));
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, switchMap, tap } from 'rxjs';
-import { MoviesService } from '../services/movies/movies.service';
+import { MoviesService } from './movies.service';
 
 @Component({
   selector: 'movie-rating-app-movies',
@@ -29,7 +29,7 @@ export class MoviesComponent implements OnInit, OnDestroy {
         tap((val) => {
           console.log('GET - find all', val);
         }),
-        switchMap(() => this.movieService.delete('1'))
+        switchMap(() => this.movieService.remove('1'))
       )
       .subscribe((val) => {
         console.log('GET - find all', val);
