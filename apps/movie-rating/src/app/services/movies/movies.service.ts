@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  CreateMoviePayload,
-  DeleteMoviePayload,
+  CreateMovieDto,
   Movie,
-  UpdateMoviePayload,
+  UpdateMovieDto,
 } from '@movie-rating-app/api-interfaces';
 import { Observable } from 'rxjs';
 import { EnvironmentService } from '../environment/environment.service';
@@ -15,6 +14,10 @@ import { EnvironmentService } from '../environment/environment.service';
 export class MoviesService {
   private moviesApiUrl: string;
 
+  private genUrl(id?: string) {
+    return `${this.moviesApiUrl}/${id ?? ''}`;
+  }
+
   constructor(
     private http: HttpClient,
     private environment: EnvironmentService
@@ -23,25 +26,22 @@ export class MoviesService {
   }
 
   find(id: Movie['id']): Observable<Movie> {
-    const url = `${this.moviesApiUrl}/${id}`;
-    return this.http.get<Movie>(url);
+    return this.http.get<Movie>(this.genUrl(id));
   }
 
   findAll(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(this.moviesApiUrl);
+    return this.http.get<Movie[]>(this.genUrl());
   }
 
-  create(payload: CreateMoviePayload): Observable<Movie> {
-    return this.http.post<Movie>(this.moviesApiUrl, payload);
+  create(payload: CreateMovieDto): Observable<Movie> {
+    return this.http.post<Movie>(this.genUrl(), payload);
   }
 
-  update({ id, ...rest }: UpdateMoviePayload): Observable<Movie> {
-    const url = `${this.moviesApiUrl}/${id}`;
-    return this.http.put<Movie>(url, rest);
+  update(id: Movie['id'], updateMovieDto: UpdateMovieDto): Observable<Movie> {
+    return this.http.patch<Movie>(this.genUrl(id), updateMovieDto);
   }
 
-  delete({ id }: DeleteMoviePayload): Observable<Movie> {
-    const url = `${this.moviesApiUrl}/${id}`;
-    return this.http.delete<Movie>(url);
+  delete(id: Movie['id']): Observable<Movie> {
+    return this.http.delete<Movie>(this.genUrl(id));
   }
 }

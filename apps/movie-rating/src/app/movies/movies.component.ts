@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription, switchMap } from 'rxjs';
+import { Subscription, switchMap, tap } from 'rxjs';
 import { MoviesService } from '../services/movies/movies.service';
 
 @Component({
@@ -20,14 +20,19 @@ export class MoviesComponent implements OnInit, OnDestroy {
       console.log('GET - find 1', val);
     });
     const sub3 = this.movieService
-      .update({ id: '1', title: 'What is this?' })
+      .update('1', { title: 'What is this?' })
       .pipe(
-        switchMap(() => {
+        switchMap((val) => {
+          console.log('PATCH - update 1 and then GET - find all', val);
           return this.movieService.findAll();
-        })
+        }),
+        tap((val) => {
+          console.log('GET - find all', val);
+        }),
+        switchMap(() => this.movieService.delete('1'))
       )
       .subscribe((val) => {
-        console.log('PUT - update 1 and then GET - find all', val);
+        console.log('GET - find all', val);
       });
 
     this.subscriptions.push(sub1, sub2, sub3);
