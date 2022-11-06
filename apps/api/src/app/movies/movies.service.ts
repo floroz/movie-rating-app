@@ -50,7 +50,7 @@ export class MoviesService {
     return movie;
   }
 
-  update(id: number, updateMovieDto: UpdateMovieDto) {
+  update(id: Movie['id'], updateMovieDto: UpdateMovieDto) {
     const movie = movies_db[id];
 
     if (!movie) {
@@ -87,7 +87,7 @@ export class MoviesService {
     return updatedMovie;
   }
 
-  remove(id: string) {
+  remove(id: Movie['id']) {
     const movie = movies_db[id];
 
     if (!movie) {

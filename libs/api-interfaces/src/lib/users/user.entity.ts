@@ -6,7 +6,7 @@ type UserRating = {
   score: number;
 };
 
-export interface User extends Entity {
+export class User extends Entity {
   email: string;
   moviesRated: UserRating[];
 }
