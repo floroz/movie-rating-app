@@ -9,9 +9,15 @@ import { MoviesComponent } from './movies/movies.component';
 import { MoviesTableComponent } from './movies/movies-table/movies-table.component';
 import { WebApiInterceptor } from './shared/interceptor/web-api.interceptor';
 import { EnvironmentService } from './shared/data-access/environment/environment.service';
+import { MovieFormComponent } from './movies/movie-form/movie-form.component';
 
 @NgModule({
-  declarations: [AppComponent, MoviesComponent, MoviesTableComponent],
+  declarations: [
+    AppComponent,
+    MoviesComponent,
+    MoviesTableComponent,
+    MovieFormComponent,
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,

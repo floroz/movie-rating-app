@@ -1,55 +1,84 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Movie } from '@movie-rating-app/api-interfaces';
-import { Observable, Subscription, tap } from 'rxjs';
+import { catchError, of, Subscription, switchMap } from 'rxjs';
 import { MoviesService } from './movies.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../shared/ui/confirmation-dialog.component';
-import { MoviesTableComponent } from './movies-table/movies-table.component';
+import { MovieForm } from './movie-form/movies-form.types';
 @Component({
   selector: 'movie-rating-app-movies',
   templateUrl: './movies.component.html',
   styleUrls: ['./movies.component.scss'],
 })
 export class MoviesComponent implements OnInit, OnDestroy {
-  @ViewChild(MoviesTableComponent)
-  private moviesTableComp: MoviesTableComponent;
-
-  movies$: Observable<Movie[]>;
+  movies: Movie[];
 
   subscriptionManager: Subscription[] = [];
 
   constructor(private movieService: MoviesService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.movies$ = this.movieService.findAll();
+    const moviesSub = this.movieService.findAll().subscribe((movies) => {
+      this.movies = movies;
+    });
+
+    this.subscriptionManager.push(moviesSub);
   }
 
   ngOnDestroy(): void {
     this.subscriptionManager.forEach((sub) => sub.unsubscribe());
   }
 
+  onSubmit(formData: MovieForm) {
+    console.log(formData);
+  }
+
   onDeleteMovie(movie: Movie) {
     this.openDialog(movie);
   }
 
+  private copyMovies() {
+    return [...this.movies];
+  }
+
+  /**
+   * In a real world scenario, we would be using a NotificationService.
+   */
+  private notifyUser(message: string) {
+    alert(message);
+  }
+
+  /**
+   * Optimistic UI Updates ---
+   * we remove the item from the list before we receive BE confirmation
+   * so that the user feels the update is immediate.
+   *
+   * If BE sends an error, we rollback to the previous list and refresh the table
+   * (and inform the user something wen wrong via tost/notification system)
+   */
+  private optimisticUpdateDelete(id: Movie['id']) {
+    this.movies = this.movies.filter((m) => m.id !== id);
+  }
+
   private removeMovie(id: Movie['id']) {
-    /**
-     * Opportunities for UX improvements: Optimistic UI Updates
-     * we remove the item from the list before we receive BE confirmation
-     * so that the user feels the update is immediate.
-     *
-     * If BE sends an error, we rollback to the previous list and refresh the table
-     * (and inform the user something wen wrong via tost/notification system)
-     */
+    const moviesCopy = this.copyMovies();
+
+    this.optimisticUpdateDelete(id);
+
     const deleteMovieSub = this.movieService
       .remove(id)
       .pipe(
-        tap(() => {
-          this.movies$ = this.movieService.findAll();
-        })
+        catchError(() => {
+          this.notifyUser(
+            'Oops.. something went wrong when trying to deleting the movie'
+          );
+          this.movies = moviesCopy;
+          return of();
+        }),
+        switchMap(() => this.movieService.findAll())
       )
-      .subscribe(() => {
-        this.moviesTableComp.onRefresh();
+      .subscribe((updatedMovies) => {
+        this.movies = updatedMovies;
       });
 
     this.subscriptionManager.push(deleteMovieSub);

@@ -1,8 +1,11 @@
 <main>
   <h1>Movie Rating</h1>
   <h2>Have your say!</h2>
+  <section>
+    <movie-rating-app-movie-form (formData)="onSubmit($event)"></movie-rating-app-movie-form>
+  </section>
   <section class="movie-list">
-    <ng-container *ngIf="movies$ | async as movies; else loadingMovies">
+    <ng-container *ngIf="movies; else loadingMovies">
       <movie-rating-app-movies-table [movies]="movies" (deleteRow)="onDeleteMovie($event)"></movie-rating-app-movies-table>
     </ng-container>
     <ng-template #loadingMovies>
