@@ -9,7 +9,7 @@
     "test": "nx test",
     "serve:api": "nx run api:serve",
     "serve:web": "nx run movie-rating:serve --open",
-    "serve": "concurrently \"npm run serve:api\" \"npm run serve:web\""
+    "start": "concurrently \"npm run serve:api\" \"npm run serve:web\""
   },
   "private": true,
   "dependencies": {
