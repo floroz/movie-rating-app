@@ -1,1 +1,13 @@
-<p>movies works!</p>
+<main>
+  <h1>Movie Rating</h1>
+  <h2>Have your say!</h2>
+  <section class="movie-list">
+    <ng-container *ngIf="movies$ | async as movies; else loadingMovies">
+      <movie-rating-app-movies-table [movies]="movies" (deleteRow)="onDeleteMovie($event)"></movie-rating-app-movies-table>
+    </ng-container>
+    <ng-template #loadingMovies>
+      <h3>Loading movies...</h3>
+      <mat-spinner diameter="50"></mat-spinner>
+    </ng-template>
+  </section>
+</main>

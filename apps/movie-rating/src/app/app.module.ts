@@ -2,11 +2,13 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 import { MoviesComponent } from './movies/movies.component';
 import { MoviesTableComponent } from './movies/movies-table/movies-table.component';
+import { WebApiInterceptor } from './shared/interceptor/web-api.interceptor';
+import { EnvironmentService } from './shared/data-access/environment/environment.service';
 
 @NgModule({
   declarations: [AppComponent, MoviesComponent, MoviesTableComponent],
@@ -16,7 +18,14 @@ import { MoviesTableComponent } from './movies/movies-table/movies-table.compone
     BrowserAnimationsModule,
     MaterialModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: WebApiInterceptor,
+      multi: true,
+      deps: [EnvironmentService],
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

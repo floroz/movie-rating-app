@@ -7,7 +7,7 @@ interface Rating {
 
 export class Movie extends Entity {
   title: string;
-  directedBy: string;
-  releaseYear: number;
+  director: string;
+  year: number;
   rating: Rating;
 }

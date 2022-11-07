@@ -5,8 +5,8 @@
 import { Environment } from './environment.types';
 
 export const environment: Environment = {
-  production: false,
-  apiUrl: 'http://localhost:3333/api',
+  PRODUCTION: false,
+  WEB_API_BASE_URL: 'http://localhost:3333/api',
 };
 
 /*

@@ -1,0 +1,16 @@
+$row-padding: 2rem;
+
+table {
+  max-width: 100%;
+  width: 75rem;
+
+  td, th {
+    text-align: left;
+    padding: $row-padding;
+  }
+}
+
+.no-data {
+  padding: $row-padding;
+  text-align: center;
+}

@@ -1,4 +1,4 @@
 export interface Environment {
-  production: boolean;
-  apiUrl: string;
+  PRODUCTION: boolean;
+  WEB_API_BASE_URL: string;
 }

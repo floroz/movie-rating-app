@@ -4,6 +4,7 @@ import {
   UpdateMovieDto,
 } from '@movie-rating-app/api-interfaces';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { delay, Observable, of } from 'rxjs';
 import { movies_db } from '../../in-memory-db';
 
 @Injectable()
@@ -12,7 +13,7 @@ export class MoviesService {
     throw new HttpException('Not found', HttpStatus.NOT_FOUND);
   }
 
-  create(createMovieDto: CreateMovieDto) {
+  create(createMovieDto: CreateMovieDto): Observable<Movie> {
     // Let's imagine here we have validation to ensure that a new movie that has the same title, director and year of release cannot be added.
     // Pseudo code:
     // if (movie exists) {
@@ -33,24 +34,24 @@ export class MoviesService {
 
     movies_db[id] = movie;
 
-    return movie;
+    return of(movie).pipe(delay(350));
   }
 
-  findAll() {
-    return Object.values(movies_db);
+  findAll(): Observable<Movie[]> {
+    return of(Object.values(movies_db)).pipe(delay(350));
   }
 
-  findOne(id: Movie['id']): Movie {
+  findOne(id: Movie['id']): Observable<Movie> {
     const movie = movies_db[id];
 
     if (!movie) {
       this.throwMovieNotFound();
     }
 
-    return movie;
+    return of(movie).pipe(delay(350));
   }
 
-  update(id: Movie['id'], updateMovieDto: UpdateMovieDto) {
+  update(id: Movie['id'], updateMovieDto: UpdateMovieDto): Observable<Movie> {
     const movie = movies_db[id];
 
     if (!movie) {
@@ -84,10 +85,10 @@ export class MoviesService {
 
     movies_db[id] = updatedMovie;
 
-    return updatedMovie;
+    return of(updatedMovie).pipe(delay(350));
   }
 
-  remove(id: Movie['id']) {
+  remove(id: Movie['id']): Observable<Movie> {
     const movie = movies_db[id];
 
     if (!movie) {
@@ -96,6 +97,6 @@ export class MoviesService {
 
     delete movies_db[id];
 
-    return movie;
+    return of(movie).pipe(delay(350));
   }
 }

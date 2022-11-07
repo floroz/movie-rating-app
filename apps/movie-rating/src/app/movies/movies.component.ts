@@ -1,46 +1,72 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription, switchMap, tap } from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Movie } from '@movie-rating-app/api-interfaces';
+import { Observable, Subscription, tap } from 'rxjs';
 import { MoviesService } from './movies.service';
-
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../shared/ui/confirmation-dialog.component';
+import { MoviesTableComponent } from './movies-table/movies-table.component';
 @Component({
   selector: 'movie-rating-app-movies',
   templateUrl: './movies.component.html',
   styleUrls: ['./movies.component.scss'],
 })
 export class MoviesComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
+  @ViewChild(MoviesTableComponent)
+  private moviesTableComp: MoviesTableComponent;
 
-  constructor(private movieService: MoviesService) {}
+  movies$: Observable<Movie[]>;
+
+  subscriptionManager: Subscription[] = [];
+
+  constructor(private movieService: MoviesService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
-    const sub1 = this.movieService.findAll().subscribe((val) => {
-      console.log('GET - find all', val);
-    });
-    const sub2 = this.movieService.find('1').subscribe((val) => {
-      console.log('GET - find 1', val);
-    });
-    const sub3 = this.movieService
-      .update('1', { title: 'What is this?' })
-      .pipe(
-        switchMap((val) => {
-          console.log('PATCH - update 1 and then GET - find all', val);
-          return this.movieService.findAll();
-        }),
-        tap((val) => {
-          console.log('GET - find all', val);
-        }),
-        switchMap(() => this.movieService.remove('1'))
-      )
-      .subscribe((val) => {
-        console.log('GET - find all', val);
-      });
-
-    this.subscriptions.push(sub1, sub2, sub3);
+    this.movies$ = this.movieService.findAll();
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  ngOnDestroy(): void {
+    this.subscriptionManager.forEach((sub) => sub.unsubscribe());
+  }
 
-    this.subscriptions = [];
+  onDeleteMovie(movie: Movie) {
+    this.openDialog(movie);
+  }
+
+  private removeMovie(id: Movie['id']) {
+    /**
+     * Opportunities for UX improvements: Optimistic UI Updates
+     * we remove the item from the list before we receive BE confirmation
+     * so that the user feels the update is immediate.
+     *
+     * If BE sends an error, we rollback to the previous list and refresh the table
+     * (and inform the user something wen wrong via tost/notification system)
+     */
+    const deleteMovieSub = this.movieService
+      .remove(id)
+      .pipe(
+        tap(() => {
+          this.movies$ = this.movieService.findAll();
+        })
+      )
+      .subscribe(() => {
+        this.moviesTableComp.onRefresh();
+      });
+
+    this.subscriptionManager.push(deleteMovieSub);
+  }
+
+  private openDialog(movie: Movie): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Are you sure you want to delete ${movie.title}?`,
+        subTitle: 'This action is irreversible',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((shouldDelete) => {
+      if (shouldDelete) {
+        this.removeMovie(movie.id);
+      }
+    });
   }
 }
