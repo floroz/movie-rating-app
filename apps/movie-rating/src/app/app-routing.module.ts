@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Route, RouterModule } from '@angular/router';
+import { AddMovieComponent } from './add-movie/add-movie.component';
 import { MoviesComponent } from './movies/movies.component';
 
 const appRoutes: Route[] = [
@@ -7,6 +8,10 @@ const appRoutes: Route[] = [
     path: 'movies',
     pathMatch: 'full',
     component: MoviesComponent,
+  },
+  {
+    path: 'movies/new',
+    component: AddMovieComponent,
   },
   {
     path: '',

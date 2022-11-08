@@ -1,6 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Movie } from '@movie-rating-app/api-interfaces';
-import { catchError, of, Subscription, switchMap } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  of,
+  Subject,
+  Subscription,
+  switchMap,
+} from 'rxjs';
 import { MoviesService } from './data-access/movies.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../shared/ui/confirmation-dialog.component';
@@ -12,18 +22,47 @@ import { RatingDialogComponent } from './ui/rating-dialog/rating-dialog.componen
   styleUrls: ['./movies.component.scss'],
 })
 export class MoviesComponent implements OnInit, OnDestroy {
+  moviesFullList: Movie[];
   movies: Movie[];
 
-  subscriptionManager: Subscription[] = [];
+  isSearchLoading = false;
+
+  private searchTerm = new Subject<string>();
+  private subscriptionManager: Subscription[] = [];
 
   constructor(private movieService: MoviesService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
     const moviesSub = this.movieService.findAll().subscribe((movies) => {
+      this.moviesFullList = movies;
       this.movies = movies;
     });
 
-    this.subscriptionManager.push(moviesSub);
+    const searchSub = this.searchTerm
+      .pipe(
+        debounceTime(350),
+        map((term) => term.trim()),
+        map((term) => {
+          if (!term) {
+            this.movies = this.moviesFullList;
+          }
+
+          return term;
+        }),
+        filter(Boolean),
+        distinctUntilChanged(),
+        switchMap((term) => {
+          this.isSearchLoading = true;
+
+          return this.movieService.search(term);
+        })
+      )
+      .subscribe((movies) => {
+        this.isSearchLoading = false;
+        this.movies = movies;
+      });
+
+    this.subscriptionManager.push(moviesSub, searchSub);
   }
 
   ngOnDestroy(): void {
@@ -40,6 +79,9 @@ export class MoviesComponent implements OnInit, OnDestroy {
 
   onDeleteMovie(movie: Movie) {
     this.openDeleteDialog(movie);
+  }
+  onSearch(searchTerm: string) {
+    this.searchTerm.next(searchTerm);
   }
 
   private copyMovies() {

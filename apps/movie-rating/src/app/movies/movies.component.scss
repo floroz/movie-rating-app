@@ -1,5 +1,8 @@
 main {
   padding: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -17,3 +20,19 @@ h2 {
 section {
   margin: 5rem 0;
 }
+
+.layout {
+  max-width: 125rem;
+}
+
+.add {
+  margin: 4rem 0;
+}
+
+.search {
+  margin: 4rem 0;
+}
+
+
+
+

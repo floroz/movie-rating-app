@@ -1,16 +1,25 @@
 <main>
-  <h1>Batman Movie Rating</h1>
-  <h2>The best Batman movies on the Web</h2>
-  <section>
-    <movie-rating-app-movie-form (formData)="onSubmit($event)"></movie-rating-app-movie-form>
-  </section>
-  <section class="movie-list">
-    <ng-container *ngIf="movies; else loadingMovies">
-      <movie-rating-app-movies-table [movies]="movies" (deleteMovie)="onDeleteMovie($event)" (selectMovie)="onSelectMovie($event)"></movie-rating-app-movies-table>
-    </ng-container>
-    <ng-template #loadingMovies>
-      <h3>Loading movies...</h3>
-      <mat-spinner diameter="50"></mat-spinner>
-    </ng-template>
-  </section>
+   <div class="layout">
+    <h1>Batman Movie Rating</h1>
+    <h2>The best Batman movies on the Web</h2>
+
+    <div class="add">
+        <a mat-raised-button color="primary" routerLink="new">Add a new Movie</a>
+    </div>
+<div class="search">
+
+<movie-rating-app-movie-search [isLoading]="isSearchLoading" (searchParam)="onSearch($event)">
+</movie-rating-app-movie-search>
+</div>
+    <section class="movie-list">
+      <ng-container *ngIf="movies; else loadingMovies">
+        <movie-rating-app-movies-table [movies]="movies" (deleteMovie)="onDeleteMovie($event)"
+          (selectMovie)="onSelectMovie($event)"></movie-rating-app-movies-table>
+      </ng-container>
+      <ng-template #loadingMovies>
+        <h3>Loading movies...</h3>
+        <mat-spinner diameter="50"></mat-spinner>
+      </ng-template>
+    </section>
+   </div>
 </main>

@@ -14,6 +14,7 @@ import { RatingDialogComponent } from './movies/ui/rating-dialog/rating-dialog.c
 import { ConfirmationDialogComponent } from './shared/ui/confirmation-dialog.component';
 import { MovieSearchComponent } from './movies/ui/movie-search/movie-search.component';
 import { AppRoutingModule } from './app-routing.module';
+import { AddMovieComponent } from './add-movie/add-movie.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { AppRoutingModule } from './app-routing.module';
     RatingDialogComponent,
     ConfirmationDialogComponent,
     MovieSearchComponent,
+    AddMovieComponent,
   ],
   imports: [
     BrowserModule,

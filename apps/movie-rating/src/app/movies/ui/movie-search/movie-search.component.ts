@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'movie-rating-app-movie-search',
   templateUrl: './movie-search.component.html',
   styleUrls: ['./movie-search.component.scss'],
 })
-export class MovieSearchComponent implements OnInit {
-  constructor() {}
+export class MovieSearchComponent {
+  @Input() isLoading: boolean;
+  @Output() searchParam = new EventEmitter();
 
-  ngOnInit(): void {}
+  onSearch(value: string) {
+    this.searchParam.emit(value);
+  }
 }

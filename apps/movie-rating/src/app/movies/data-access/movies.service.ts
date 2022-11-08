@@ -5,12 +5,15 @@ import {
   Movie,
   UpdateMovieDto,
 } from '@movie-rating-app/api-interfaces';
-import { delay, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { isMovieMatch } from '../utils/movie-match.util';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MoviesService {
+  $movies: Observable<Movie[]>;
+
   private readonly apiRoute = '/movies/';
 
   constructor(private http: HttpClient) {}
@@ -23,16 +26,10 @@ export class MoviesService {
    * For the purpose of this example, we would move the searching logic to this functionality.
    */
   search(search: string): Observable<Movie[]> {
-    return this.findAll().pipe(
-      map((movies) => {
-        return movies.filter(
-          (movie) =>
-            movie.director.includes(search) ||
-            movie.title.includes(search) ||
-            movie.year === +search
-        );
-      })
-    );
+    const mapFunctionThatShouldLiveInBackend = (movies: Movie[]) =>
+      movies.filter((movie) => isMovieMatch(search, movie));
+
+    return this.findAll().pipe(map(mapFunctionThatShouldLiveInBackend));
   }
 
   find(id: Movie['id']): Observable<Movie> {
@@ -52,8 +49,6 @@ export class MoviesService {
   }
 
   remove(id: Movie['id']): Observable<Movie> {
-    console.log('called the service');
-
     return this.http.delete<Movie>(this.apiRoute + id);
   }
 }
