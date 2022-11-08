@@ -85,7 +85,7 @@ export class MoviesComponent implements OnInit, OnDestroy {
   }
 
   private copyMovies() {
-    return [...this.movies];
+    return [...this.moviesFullList];
   }
 
   /**
@@ -131,6 +131,41 @@ export class MoviesComponent implements OnInit, OnDestroy {
     this.subscriptionManager.push(deleteMovieSub);
   }
 
+  private optimisticUpdateRating(id: Movie['id'], rating: number) {
+    this.moviesFullList.forEach((movie) => {
+      if (movie.id === id) {
+        movie.rating.score = rating;
+      }
+    });
+  }
+
+  private updateMovieRating(id: string, rating: number) {
+    const moviesCopy = this.copyMovies();
+
+    this.optimisticUpdateRating(id, rating);
+
+    this.movieService
+      .update(id, {
+        rating: rating,
+      })
+      .pipe(
+        catchError(() => {
+          this.movies = moviesCopy;
+          this.moviesFullList = moviesCopy;
+
+          return of(null);
+        }),
+        filter(Boolean),
+        switchMap(() => {
+          return this.movieService.findAll();
+        })
+      )
+      .subscribe((movies) => {
+        this.moviesFullList = movies;
+        this.movies = movies;
+      });
+  }
+
   private openDeleteDialog(movie: Movie): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
@@ -151,9 +186,9 @@ export class MoviesComponent implements OnInit, OnDestroy {
       data: movie,
     });
     dialogRef.afterClosed().subscribe((rating) => {
-      console.log(rating);
-      // if (typeof rating === 'number') {
-      // }
+      if (typeof rating === 'number') {
+        this.updateMovieRating(movie.id, rating);
+      }
     });
   }
 }

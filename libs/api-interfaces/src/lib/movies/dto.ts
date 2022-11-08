@@ -6,4 +6,6 @@ export class CreateMovieDto extends PickType(Movie, [
   'year',
 ]) {}
 
-export class UpdateMovieDto extends PartialType(CreateMovieDto) {}
+export class UpdateMovieDto extends PartialType(CreateMovieDto) {
+  rating: number;
+}

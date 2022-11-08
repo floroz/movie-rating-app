@@ -10,7 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
       <p>Current rating: {{ data.rating.score }}</p>
       <mat-form-field appearance="fill">
         <mat-label>Select</mat-label>
-        <mat-select>
+        <mat-select [(value)]="selectedValue">
           <mat-option *ngFor="let num of ratings" [value]="num">{{
             num
           }}</mat-option>
@@ -33,6 +33,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   `,
 })
 export class RatingDialogComponent {
+  selectedValue: string;
+
   ratings = Array.from(Array(11).keys());
 
   constructor(
@@ -40,15 +42,11 @@ export class RatingDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
-  onRate() {
-    this.dialogRef.close();
-  }
-
   onNoClick(): void {
-    this.dialogRef.close(false);
+    this.dialogRef.close(null);
   }
 
   onYesClick() {
-    this.dialogRef.close(true);
+    this.dialogRef.close(this.selectedValue);
   }
 }

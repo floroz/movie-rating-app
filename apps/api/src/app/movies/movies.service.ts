@@ -79,7 +79,10 @@ export class MoviesService {
       // restrict these properties from updates
       createdAt: movie.createdAt,
       id: movie.id,
-      rating: movie.rating,
+      rating: {
+        ...movie.rating,
+        score: updateMovieDto.rating ?? movie.rating.score,
+      },
       updatedAt: new Date().toISOString(),
     };
 
