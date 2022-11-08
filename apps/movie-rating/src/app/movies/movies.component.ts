@@ -14,7 +14,6 @@ import {
 import { MoviesService } from './data-access/movies.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../shared/ui/confirmation-dialog.component';
-import { MovieForm } from './ui/movie-form/movies-form.types';
 import { RatingDialogComponent } from './ui/rating-dialog/rating-dialog.component';
 @Component({
   selector: 'movie-rating-app-movies',
@@ -67,10 +66,6 @@ export class MoviesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptionManager.forEach((sub) => sub.unsubscribe());
-  }
-
-  onSubmit(formData: MovieForm) {
-    console.log(formData);
   }
 
   onSelectMovie(movie: Movie) {
