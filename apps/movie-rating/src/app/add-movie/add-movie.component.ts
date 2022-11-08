@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CreateMovieDto } from '@movie-rating-app/api-interfaces';
-import { catchError, of, Subject, switchMap, tap } from 'rxjs';
+import { catchError, of, Subject, Subscription, switchMap, tap } from 'rxjs';
 import { MoviesService } from '../movies/data-access/movies.service';
 import { MovieFormComponent } from './movie-form/movie-form.component';
 
@@ -27,15 +27,16 @@ import { MovieFormComponent } from './movie-form/movie-form.component';
     `,
   ],
 })
-export class AddMovieComponent implements OnInit {
+export class AddMovieComponent implements OnInit, OnDestroy {
   @ViewChild(MovieFormComponent) private movieFormComp: MovieFormComponent;
+  private subs: Subscription[] = [];
 
   private createMovieSubject = new Subject<CreateMovieDto>();
 
   constructor(private movieService: MoviesService) {}
 
   ngOnInit() {
-    this.createMovieSubject
+    const sub = this.createMovieSubject
       .pipe(
         switchMap((createMovie) => this.movieService.create(createMovie)),
         catchError(() => {
@@ -50,6 +51,12 @@ export class AddMovieComponent implements OnInit {
         // again, a notification/toast would be nice here
         alert(`Movie ${movie.title} created.`);
       });
+
+    this.subs.push(sub);
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach((sub) => sub.unsubscribe());
   }
 
   onCreateMovie(movieDto: CreateMovieDto) {
