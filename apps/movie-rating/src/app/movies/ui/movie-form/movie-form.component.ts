@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { MovieForm } from './movies-form.types';
 
 @Component({
@@ -8,6 +9,8 @@ import { MovieForm } from './movies-form.types';
 })
 export class MovieFormComponent {
   @Output() formData = new EventEmitter<MovieForm>();
+
+  constructor() {}
 
   onSubmit(): void {
     this.formData.emit();

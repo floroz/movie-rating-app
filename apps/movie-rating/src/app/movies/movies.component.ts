@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Movie } from '@movie-rating-app/api-interfaces';
 import { catchError, of, Subscription, switchMap } from 'rxjs';
-import { MoviesService } from './movies.service';
+import { MoviesService } from './data-access/movies.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../shared/ui/confirmation-dialog.component';
-import { MovieForm } from './movie-form/movies-form.types';
+import { MovieForm } from './ui/movie-form/movies-form.types';
+import { RatingDialogComponent } from './ui/rating-dialog/rating-dialog.component';
 @Component({
   selector: 'movie-rating-app-movies',
   templateUrl: './movies.component.html',
@@ -33,8 +34,12 @@ export class MoviesComponent implements OnInit, OnDestroy {
     console.log(formData);
   }
 
+  onSelectMovie(movie: Movie) {
+    this.openRatingDialog(movie);
+  }
+
   onDeleteMovie(movie: Movie) {
-    this.openDialog(movie);
+    this.openDeleteDialog(movie);
   }
 
   private copyMovies() {
@@ -84,7 +89,7 @@ export class MoviesComponent implements OnInit, OnDestroy {
     this.subscriptionManager.push(deleteMovieSub);
   }
 
-  private openDialog(movie: Movie): void {
+  private openDeleteDialog(movie: Movie): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: `Are you sure you want to delete ${movie.title}?`,
@@ -96,6 +101,17 @@ export class MoviesComponent implements OnInit, OnDestroy {
       if (shouldDelete) {
         this.removeMovie(movie.id);
       }
+    });
+  }
+
+  private openRatingDialog(movie: Movie): void {
+    const dialogRef = this.dialog.open(RatingDialogComponent, {
+      data: movie,
+    });
+    dialogRef.afterClosed().subscribe((rating) => {
+      console.log(rating);
+      // if (typeof rating === 'number') {
+      // }
     });
   }
 }

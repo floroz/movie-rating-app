@@ -8,6 +8,14 @@ table {
     text-align: left;
     padding: $row-padding;
   }
+
+  .mat-cell {
+    cursor: pointer;
+  }
+}
+
+button {
+  user-select: none;
 }
 
 .no-data {

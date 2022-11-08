@@ -9,7 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
     <div mat-dialog-actions class="button-group">
       <button
         mat-raised-button
-        color="accent"
+        color="basic"
         (click)="onNoClick()"
         cdkFocusInitial
       >

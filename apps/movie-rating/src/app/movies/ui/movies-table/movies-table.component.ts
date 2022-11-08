@@ -19,13 +19,18 @@ export class MoviesTableComponent {
   displayedColumns = ['title', 'year', 'director', 'rating', 'delete'];
 
   @Input() movies: Movie[];
-  @Output() deleteRow = new EventEmitter<Movie>();
+  @Output() deleteMovie = new EventEmitter<Movie>();
+  @Output() selectMovie = new EventEmitter<Movie>();
 
   onRefresh() {
     this.table.renderRows();
   }
 
   onDeleteRow(movie: Movie) {
-    this.deleteRow.emit(movie);
+    this.deleteMovie.emit(movie);
+  }
+
+  onSelectRow(movie: Movie) {
+    this.selectMovie.emit(movie);
   }
 }
